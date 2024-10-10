@@ -8,7 +8,9 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Button Content="Press" HorizontalAlignment="Left" Margin="384,166,0,0" VerticalAlignment="Top"/>
-        <Button Content="Przycisk" HorizontalAlignment="Left" Height="41" Margin="553,176,0,0" VerticalAlignment="Top" Width="148"/>
+        <Button x:Name="btnPress" Content="Przycisk" HorizontalAlignment="Left" Height="41" Margin="553,176,0,0" VerticalAlignment="Top" Width="148" Click="btnPress_Click"/>
 
     </Grid>
 </Window>
+
+    
