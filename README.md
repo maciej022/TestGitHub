@@ -1,42 +1,61 @@
-<Window x:Class="WpfApp3.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WpfApp3"
-        mc:Ignorable="d"
-        Title="Dodaj pracownika" Height="450" Width="800">
-    <Grid Background="LightSteelBlue">
-        <GroupBox Header="Dane pracownika" Margin="51,160,446,72">
-            <StackPanel>
+using System;
+using System.Text;
+using System.Windows;
 
-                <Label Content="Imię:" HorizontalAlignment="Left"/>
-                <TextBox x:Name="imie_txt" TextWrapping="Wrap" Width="120" HorizontalAlignment="Left" VerticalAlignment="Top"/>
-                <Label Content="Nazwisko:" HorizontalAlignment="Left"/>
-                <TextBox x:Name="nazwisko_txt" TextWrapping="Wrap" Width="120" HorizontalAlignment="Left"/>
-                <Label Content="Stanowisko:" HorizontalAlignment="Left"/>
-                <ComboBox x:Name="Stanowisko_combo" Width="120" HorizontalAlignment="Left">
-                    <ListBoxItem Content="Kierownik"/>
-                    <ListBoxItem Content="Starszy programista"/>
-                    <ListBoxItem Content="Młodszy programista"/>
-                    <ListBoxItem Content="Tester"/>
-                </ComboBox>
+namespace WpfApp3
+{
+    public partial class MainWindow : Window
+    {
+        private string maleDuzeLitery = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        private string cyfry = "1234567890";
+        private string znakiSpecjalne = "!@#$%^&*";
+        private Random losuj = new Random();
 
-            </StackPanel>
-        </GroupBox>
-        <GroupBox Header="Generowanie hasła" Margin="477,160,18,72">
-            <StackPanel>
-                <Label Content="Ile znaków?" HorizontalAlignment="Left"/>
-                <TextBox x:Name="ileznaow_txt" TextWrapping="Wrap" Text="" Width="120" HorizontalAlignment="Left"/>
-                <CheckBox x:Name="malelitery_check" Content="Małe i wielkie litery" HorizontalAlignment="Left"/>
-                <CheckBox x:Name="cyfry_check" Content="Cyfry" HorizontalAlignment="Left"/>
-                <CheckBox x:Name="specjalne_check" Content="Znaki specjalne" HorizontalAlignment="Left"/>
-                <Button x:Name="generuj_btn" Content="Generuj hasło" Width="110" Background="SteelBlue" Click="generuj_btn_Click"/>
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
 
+        private void generuj_btn_Click(object sender, RoutedEventArgs e)
+        {
+            if (!int.TryParse(ileznakow_txt.Text, out int dlugoscHasla) || dlugoscHasla <= 0)
+            {
+                MessageBox.Show("Podaj poprawną liczbę znaków!", "Błąd", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-            </StackPanel>
-        </GroupBox>
-        <Button x:Name="Zatwierdź_btn" Content="Zatwierdź"  Background="SteelBlue" HorizontalAlignment="Center" Margin="0,392,0,0" VerticalAlignment="Top" Width="154" Click="Zatwierdź_btn_Click"/>
+            string dozwoloneZnaki = "";
 
-    </Grid>
-</Window>
+            if (malelitery_check.IsChecked == true)
+                dozwoloneZnaki += maleDuzeLitery;
+
+            if (cyfry_check.IsChecked == true)
+                dozwoloneZnaki += cyfry;
+
+            if (specjalne_check.IsChecked == true)
+                dozwoloneZnaki += znakiSpecjalne;
+
+            if (string.IsNullOrEmpty(dozwoloneZnaki))
+            {
+                MessageBox.Show("Wybierz co najmniej jeden typ znaków!", "Błąd", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            StringBuilder haslo = new StringBuilder();
+
+            for (int i = 0; i < dlugoscHasla; i++)
+            {
+                int index = losuj.Next(dozwoloneZnaki.Length);
+                haslo.Append(dozwoloneZnaki[index]);
+            }
+
+            MessageBox.Show($"Wygenerowane hasło: {haslo}", "Hasło", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void Zatwierdź_btn_Click(object sender, RoutedEventArgs e)
+        {
+            string stanowisko = Stanowisko_combo.SelectedItem is ComboBoxItem selectedItem ? selectedItem.Content.ToString() : "Nie wybrano";
+            MessageBox.Show($"Dane pracownika:\nImię: {imie_txt.Text}\nNazwisko: {nazwisko_txt.Text}\nStanowisko: {stanowisko}", "Zatwierdzenie", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+}
